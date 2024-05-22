@@ -1,19 +1,33 @@
 import radius as radius
 
-@description('The Radius Application ID. Injected automatically by the rad CLI.')
+@description('The ID of your Radius Environment. Automatically injected by the rad CLI.')
+param environment string
+
+@description('The ID of your Radius Application. Automatically injected by the rad CLI.')
 param application string
 
-resource demo 'Applications.Core/containers@2023-10-01-preview' = {
-  name: 'demo'
+resource frontend 'Applications.Core/containers@2023-10-01-preview' = {
+  name: 'frontend'
   properties: {
     application: application
     container: {
       image: 'ghcr.io/radius-project/samples/demo:latest'
-      ports: {
-        web: {
-          containerPort: 3000
-        }
+    }
+    connections: {
+      // Define a connection to the redis container
+      // Automatically injects conneciton information into the container
+      redis: {
+        source: db.id
       }
     }
+  }
+}
+
+resource db 'Applications.Datastores/redisCaches@2023-10-01-preview' = {
+  name: 'db'
+  properties: {
+    environment: environment
+    application: application
+    // recipe is not specified, so it uses 'default' if presentx
   }
 }
