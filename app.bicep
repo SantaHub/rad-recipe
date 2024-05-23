@@ -28,6 +28,8 @@ resource db 'Applications.Datastores/redisCaches@2023-10-01-preview' = {
   properties: {
     environment: environment
     application: application
-    // recipe is not specified, so it uses 'default' if presentx
+    recipe: {
+      name: 'customRedis'
+    }
   }
 }
